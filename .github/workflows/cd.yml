@@ -1,0 +1,98 @@
+name: CD – Release & Deploy
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_BACKEND:  ghcr.io/${{ github.repository_owner }}/consenthub-backend
+  IMAGE_FRONTEND: ghcr.io/${{ github.repository_owner }}/consenthub-frontend
+
+jobs:
+  # ─── Build & Push Docker images ─────────────────────────────────────────────
+  build-and-push:
+    name: Build & Push images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract tag
+        id: meta
+        run: echo "TAG=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Build & push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ${{ env.IMAGE_BACKEND }}:${{ steps.meta.outputs.TAG }}
+            ${{ env.IMAGE_BACKEND }}:latest
+
+      - name: Build & push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ${{ env.IMAGE_FRONTEND }}:${{ steps.meta.outputs.TAG }}
+            ${{ env.IMAGE_FRONTEND }}:latest
+
+  # ─── Deploy to Kubernetes via Helm ──────────────────────────────────────────
+  deploy:
+    name: Helm Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: build-and-push
+    environment: production
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.15.0
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > /tmp/kubeconfig.yaml
+
+      - name: Extract tag
+        id: meta
+        run: echo "TAG=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Helm upgrade / install
+        env:
+          TAG: ${{ steps.meta.outputs.TAG }}
+        run: |
+          helm upgrade --install consenthub helm/consenthub \
+            --namespace consenthub \
+            --create-namespace \
+            --set image.backend.repository=${{ env.IMAGE_BACKEND }} \
+            --set image.backend.tag=${TAG} \
+            --set image.frontend.repository=${{ env.IMAGE_FRONTEND }} \
+            --set image.frontend.tag=${TAG} \
+            --set backend.secrets.secretKey="${{ secrets.SECRET_KEY }}" \
+            --set backend.secrets.jwtSecretKey="${{ secrets.JWT_SECRET_KEY }}" \
+            --set backend.secrets.adminApiKey="${{ secrets.ADMIN_API_KEY }}" \
+            --set backend.secrets.databaseUrl="${{ secrets.DATABASE_URL }}" \
+            --wait --timeout 5m \
+            --kubeconfig /tmp/kubeconfig.yaml

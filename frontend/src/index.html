@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConsentHub – B2B Consent Management Platform</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    // Point at your backend API
+    window.CONSENTHUB_API_URL = window.CONSENTHUB_API_URL || "http://localhost:5000/api";
+    // Read from meta tag if present (injected by reverse proxy / helm values)
+    const meta = document.querySelector('meta[name="api-url"]');
+    if (meta) window.CONSENTHUB_API_URL = meta.content;
+  </script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     LOGIN PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="loginPage" class="login-page" style="display:none">
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>🔐 ConsentHub</h1>
+      <p>B2B Consent Management &amp; Personalization Platform</p>
+    </div>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@yourcompany.com" required />
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required />
+      </div>
+      <button class="btn btn-primary" type="submit" id="loginBtn" style="width:100%;justify-content:center">
+        Sign In
+      </button>
+    </form>
+    <p style="text-align:center;margin-top:20px;font-size:.8rem;color:#94a3b8">
+      ConsentHub v1.0 · GDPR · CCPA · LGPD
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MAIN APP (shown after login)
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="appShell" class="layout" style="display:none">
+
+  <!-- ── Sidebar ────────────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1>🔐 ConsentHub</h1>
+      <p>Consent Management Platform</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" data-nav="dashboard">
+        <span class="icon">📊</span> Dashboard
+      </div>
+      <div class="nav-section">Consent</div>
+      <div class="nav-item" data-nav="policies">
+        <span class="icon">📋</span> Policies
+      </div>
+      <div class="nav-item" data-nav="records">
+        <span class="icon">📄</span> Records
+      </div>
+      <div class="nav-section">Insights</div>
+      <div class="nav-item" data-nav="analytics">
+        <span class="icon">📈</span> Analytics
+      </div>
+      <div class="nav-section" data-admin-only>Admin</div>
+      <div class="nav-item" data-nav="organizations" data-admin-only>
+        <span class="icon">🏢</span> Organizations
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div id="userEmail" style="font-weight:600;color:#94a3b8;margin-bottom:4px">—</div>
+      <span class="badge-role" id="userRole">viewer</span>
+      <button id="logoutBtn" class="btn btn-secondary btn-sm"
+              style="margin-top:10px;width:100%;justify-content:center">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- ── Main content ───────────────────────────────────────────────────── -->
+  <main class="main">
+    <!-- Top bar -->
+    <div class="topbar">
+      <span class="topbar-title" id="topbarTitle">Dashboard</span>
+      <div class="topbar-right">
+        <span id="serverStatus" style="font-size:.8rem;color:#64748b">Checking…</span>
+      </div>
+    </div>
+
+    <!-- ─────────── Dashboard page ─────────── -->
+    <div id="page-dashboard" class="page active">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="label">Total Records</div>
+          <div class="value" id="stat-total">—</div>
+          <div class="sub">All consent decisions</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label">Granted</div>
+          <div class="value" id="stat-granted">—</div>
+        </div>
+        <div class="stat-card red">
+          <div class="label">Denied</div>
+          <div class="value" id="stat-denied">—</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="label">Consent Rate</div>
+          <div class="value" id="stat-rate">—</div>
+          <div class="sub">Granted / Total</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+        <div class="card">
+          <div class="card-title">7-Day Consent Trend</div>
+          <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">By Collection Method</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div style="background:#f1f5f9;border-radius:6px;padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:700" id="stat-web">—</div>
+              <div style="font-size:.75rem;color:#64748b">Web Form</div>
+            </div>
+            <div style="background:#f1f5f9;border-radius:6px;padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:700" id="stat-api">—</div>
+              <div style="font-size:.75rem;color:#64748b">API</div>
+            </div>
+            <div style="background:#f1f5f9;border-radius:6px;padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:700" id="stat-email">—</div>
+              <div style="font-size:.75rem;color:#64748b">Email</div>
+            </div>
+            <div style="background:#f1f5f9;border-radius:6px;padding:12px;text-align:center">
+              <div style="font-size:1.4rem;font-weight:700" id="stat-db">—</div>
+              <div style="font-size:.75rem;color:#64748b">DB Status</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────── Policies page ─────────── -->
+    <div id="page-policies" class="page">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h2 style="font-size:1rem;font-weight:600;color:#64748b">Manage consent policies (GDPR, CCPA, LGPD…)</h2>
+        <button class="btn btn-primary" id="openCreatePolicy">+ New Policy</button>
+      </div>
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th><th>Type</th><th>Version</th>
+                <th>Explicit Req.</th><th>Retention</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="policiesTbody">
+              <tr><td colspan="7" style="text-align:center;padding:24px;color:#64748b">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="policiesPagination" class="pagination"></div>
+      </div>
+    </div>
+
+    <!-- ─────────── Records page ─────────── -->
+    <div id="page-records" class="page">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2 style="font-size:1rem;font-weight:600;color:#64748b">Individual consent decisions</h2>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-secondary btn-sm" onclick="exportRecordsCsv()">⬇ CSV</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportRecordsJson()">⬇ JSON</button>
+          <button class="btn btn-primary" id="openCreateRecord">+ Record Consent</button>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <select id="recordStatusFilter">
+          <option value="">All statuses</option>
+          <option value="granted">Granted</option>
+          <option value="denied">Denied</option>
+          <option value="withdrawn">Withdrawn</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Data Subject</th><th>Policy</th>
+                <th>Status</th><th>Method</th><th>Granted At</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="recordsTbody">
+              <tr><td colspan="7" style="text-align:center;padding:24px;color:#64748b">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="recordsPagination" class="pagination"></div>
+      </div>
+    </div>
+
+    <!-- ─────────── Analytics page ─────────── -->
+    <div id="page-analytics" class="page">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="label">Total Records</div>
+          <div class="value" id="an-total">—</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label">Consent Rate</div>
+          <div class="value" id="an-rate">—</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label">Granted</div>
+          <div class="value" id="an-granted">—</div>
+        </div>
+        <div class="stat-card red">
+          <div class="label">Denied</div>
+          <div class="value" id="an-denied">—</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="label">Withdrawn</div>
+          <div class="value" id="an-withdrawn">—</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+        <div class="card">
+          <div class="card-title">30-Day Consent Trends</div>
+          <div class="chart-container">
+            <canvas id="analyticsChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">By Collection Method</div>
+          <div class="chart-container" style="height:220px">
+            <canvas id="methodChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────── Organizations page (admin only) ─────────── -->
+    <div id="page-organizations" class="page">
+      <div style="margin-bottom:20px">
+        <h2 style="font-size:1rem;font-weight:600;color:#64748b">Customer organizations on the platform</h2>
+      </div>
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Domain</th><th>Industry</th><th>Plan</th><th>Status</th></tr>
+            </thead>
+            <tbody id="orgsTbody">
+              <tr><td colspan="5" style="text-align:center;padding:24px;color:#64748b">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="orgsPagination" class="pagination"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODALS
+════════════════════════════════════════════════════════════════════════════ -->
+
+<!-- Policy modal -->
+<div id="policyModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="policyModalTitle">New Consent Policy</span>
+      <button class="modal-close" id="closePolicyModal">&times;</button>
+    </div>
+    <form id="policyForm">
+      <input type="hidden" id="policyModalMode" value="create" />
+      <input type="hidden" id="policyModalId" value="" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Policy Name *</label>
+          <input type="text" id="policyName" required placeholder="GDPR Marketing Consent" />
+        </div>
+        <div class="form-group">
+          <label>Type *</label>
+          <select id="policyType" required>
+            <option value="gdpr">GDPR</option>
+            <option value="ccpa">CCPA</option>
+            <option value="lgpd">LGPD</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="policyDesc" rows="3" placeholder="Describe what data is processed and why…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Version</label>
+          <input type="text" id="policyVersion" value="1.0" />
+        </div>
+        <div class="form-group">
+          <label>Data Retention (days)</label>
+          <input type="number" id="policyRetention" value="365" min="1" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="policyExplicit" checked />
+          &nbsp;Requires explicit consent (double opt-in)
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelPolicyModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Policy</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Record modal -->
+<div id="recordModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Record Consent Decision</span>
+      <button class="modal-close" id="closeRecordModal">&times;</button>
+    </div>
+    <form id="recordForm">
+      <div class="form-group">
+        <label>Policy *</label>
+        <select id="recPolicyId" required>
+          <option value="">Select a policy…</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Data Subject ID *</label>
+          <input type="text" id="recSubjectId" required placeholder="user-12345" />
+        </div>
+        <div class="form-group">
+          <label>Data Subject Email</label>
+          <input type="email" id="recSubjectEmail" placeholder="user@example.com" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Status *</label>
+          <select id="recStatus" required>
+            <option value="granted">Granted</option>
+            <option value="denied">Denied</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Collection Method</label>
+          <select id="recMethod">
+            <option value="web-form">Web Form</option>
+            <option value="api">API</option>
+            <option value="email">Email</option>
+            <option value="paper">Paper</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelRecordModal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Record</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Toast container ─────────────────────────────────────────────────── -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ── Scripts ────────────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+  // Show correct view based on auth state
+  const hasToken = !!localStorage.getItem("ch_access_token");
+  document.getElementById("loginPage").style.display  = hasToken ? "none"  : "flex";
+  document.getElementById("appShell").style.display   = hasToken ? "flex"  : "none";
+
+  // Server status indicator
+  if (hasToken) {
+    api.health().then(h => {
+      document.getElementById("serverStatus").textContent =
+        h.status === "healthy" ? "🟢 API Healthy" : "🟡 API Degraded";
+    }).catch(() => {
+      document.getElementById("serverStatus").textContent = "🔴 API Unreachable";
+    });
+  }
+</script>
+</body>
+</html>
