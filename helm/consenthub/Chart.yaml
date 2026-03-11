@@ -1,0 +1,15 @@
+apiVersion: v2
+name: consenthub
+description: ConsentHub – B2B Consent Management & Personalization Platform
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - consent
+  - gdpr
+  - ccpa
+  - privacy
+  - b2b
+home: https://github.com/DARREN-2000/B2B_Consent_Personalization
+maintainers:
+  - name: ConsentHub Team

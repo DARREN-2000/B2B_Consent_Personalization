@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  # ─── PostgreSQL ────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-consenthub}
+      POSTGRES_USER: ${POSTGRES_USER:-consenthub}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-consenthub_secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-consenthub}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - consenthub_net
+
+  # ─── Backend API ──────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      FLASK_ENV: ${FLASK_ENV:-production}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-consenthub}:${POSTGRES_PASSWORD:-consenthub_secret}@db:5432/${POSTGRES_DB:-consenthub}
+      SECRET_KEY: ${SECRET_KEY:-change-this-secret}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-this-jwt-secret}
+      ADMIN_API_KEY: ${ADMIN_API_KEY:-change-this-admin-key}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      PORT: "5000"
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    networks:
+      - consenthub_net
+
+  # ─── Frontend Dashboard ───────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    networks:
+      - consenthub_net
+
+volumes:
+  postgres_data:
+
+networks:
+  consenthub_net:
+    driver: bridge

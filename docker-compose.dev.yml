@@ -1,0 +1,29 @@
+version: "3.9"
+
+# Development overrides — hot-reload + exposed ports
+services:
+  db:
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      target: builder   # stop before multi-stage copy for speed
+    command: ["python", "-m", "flask", "run", "--host=0.0.0.0", "--port=5000", "--reload"]
+    environment:
+      FLASK_ENV: development
+      FLASK_APP: wsgi.py
+      DATABASE_URL: postgresql://${POSTGRES_USER:-consenthub}:${POSTGRES_PASSWORD:-consenthub_secret}@db:5432/${POSTGRES_DB:-consenthub}
+      SECRET_KEY: dev-secret-key
+      JWT_SECRET_KEY: dev-jwt-secret-key
+      ADMIN_API_KEY: dev-admin-key
+      CORS_ORIGINS: "*"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "5000:5000"
+
+  frontend:
+    volumes:
+      - ./frontend/src:/usr/share/nginx/html

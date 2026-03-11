@@ -1,0 +1,119 @@
+# ─── Global ──────────────────────────────────────────────────────────────────
+replicaCount: 2
+
+image:
+  backend:
+    repository: consenthub/backend
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: consenthub/frontend
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# ─── Service Account ──────────────────────────────────────────────────────────
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# ─── Pod Annotations / Labels ────────────────────────────────────────────────
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop: ["ALL"]
+
+# ─── Backend Service ──────────────────────────────────────────────────────────
+backend:
+  service:
+    type: ClusterIP
+    port: 5000
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  env:
+    FLASK_ENV: production
+    PORT: "5000"
+    CORS_ORIGINS: "https://yourdomain.com"
+  # Secret values — override via --set or a sealed secret
+  secrets:
+    secretKey: "change-me-in-production"
+    jwtSecretKey: "change-me-jwt-in-production"
+    adminApiKey: "change-me-admin-key"
+    databaseUrl: ""   # If empty, postgresql subchart connection string is used
+
+# ─── Frontend Service ─────────────────────────────────────────────────────────
+frontend:
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
+
+# ─── Ingress ──────────────────────────────────────────────────────────────────
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: consenthub.yourdomain.com
+      paths:
+        - path: /api
+          pathType: Prefix
+          service: backend
+        - path: /
+          pathType: Prefix
+          service: frontend
+  tls:
+    - secretName: consenthub-tls
+      hosts:
+        - consenthub.yourdomain.com
+
+# ─── PostgreSQL (Bitnami subchart) ────────────────────────────────────────────
+postgresql:
+  enabled: true
+  auth:
+    database: consenthub
+    username: consenthub
+    password: consenthub_secret
+  primary:
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+
+# ─── Autoscaling ──────────────────────────────────────────────────────────────
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# ─── Node selectors / Tolerations / Affinity ──────────────────────────────────
+nodeSelector: {}
+tolerations: []
+affinity: {}
