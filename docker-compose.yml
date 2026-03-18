@@ -30,7 +30,7 @@ services:
         condition: service_healthy
     environment:
       FLASK_ENV: ${FLASK_ENV:-production}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-consenthub}:${POSTGRES_PASSWORD:-consenthub_secret}@db:5432/${POSTGRES_DB:-consenthub}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-consenthub}:${POSTGRES_PASSWORD:-consenthub_secret}@db:5432/${POSTGRES_DB:-consenthub}}
       SECRET_KEY: ${SECRET_KEY:-change-this-secret}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-this-jwt-secret}
       ADMIN_API_KEY: ${ADMIN_API_KEY:-change-this-admin-key}

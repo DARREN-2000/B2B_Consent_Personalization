@@ -10,6 +10,18 @@
 
 ## Docker Compose (recommended for small deployments)
 
+### Free/easy demo deployment
+
+```bash
+docker-compose -f docker-compose.demo.yml up --build -d
+```
+
+This mode runs:
+- `backend`  — Flask API using local SQLite (`consenthub_demo.db`)
+- `frontend` — Nginx dashboard on port 3000
+
+No PostgreSQL provisioning is required, making it ideal for demos.
+
 ### Production
 
 ```bash

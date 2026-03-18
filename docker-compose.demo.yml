@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: sqlite:///consenthub_demo.db
+      SECRET_KEY: demo-secret-key
+      JWT_SECRET_KEY: demo-jwt-secret-key
+      ADMIN_API_KEY: demo-admin-key
+      CORS_ORIGINS: "*"
+      PORT: "5000"
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    networks:
+      - consenthub_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    networks:
+      - consenthub_net
+
+networks:
+  consenthub_net:
+    driver: bridge
