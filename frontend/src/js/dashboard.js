@@ -451,17 +451,32 @@ function exportRecordsJson() {
 
 // ── Boot ──────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async () => {
+  function isValidApiUrl(value) {
+    if (!value) return true; // empty means "use default"
+    if (value.startsWith("/")) return true;
+    try {
+      const parsed = new URL(value);
+      return parsed.protocol === "http:" || parsed.protocol === "https:";
+    } catch {
+      return false;
+    }
+  }
+
   // API URL config (useful for GitHub Pages hosting)
   const apiUrlInput = document.getElementById("apiUrlInput");
   const apiUrlHint = document.getElementById("apiUrlHint");
   const saveApiUrlBtn = document.getElementById("saveApiUrlBtn");
   if (apiUrlInput && apiUrlHint) {
-    apiUrlInput.value = window.CONSENTHUB_API_URL || "";
+    apiUrlInput.value = localStorage.getItem("ch_api_url") || "";
     apiUrlHint.textContent = `Current: ${window.CONSENTHUB_API_URL || "Not set"}`;
   }
   if (saveApiUrlBtn && apiUrlInput) {
     saveApiUrlBtn.addEventListener("click", () => {
       const nextUrl = apiUrlInput.value.trim();
+      if (!isValidApiUrl(nextUrl)) {
+        toast("Invalid API URL. Use http(s)://... or a relative path like /api", "error");
+        return;
+      }
       if (!nextUrl) {
         localStorage.removeItem("ch_api_url");
       } else {

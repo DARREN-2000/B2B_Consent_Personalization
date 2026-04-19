@@ -229,6 +229,25 @@ input:focus, select:focus, textarea:focus {
 .login-logo { text-align: center; margin-bottom: 28px; }
 .login-logo h1 { font-size: 1.6rem; font-weight: 700; color: var(--text); }
 .login-logo p  { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+.api-config {
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.api-config-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.api-config-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.api-config-hint {
+  margin-top: 6px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
 
 /* ── Toast notifications ─────────────────────────────────────────────────── */
 .toast-container {

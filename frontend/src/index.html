@@ -6,13 +6,24 @@
   <title>ConsentHub – B2B Consent Management Platform</title>
   <link rel="stylesheet" href="css/styles.css" />
   <script>
+    function isValidApiUrlForBootstrap(value) {
+      if (!value) return false;
+      if (value.startsWith("/")) return true;
+      try {
+        const parsed = new URL(value);
+        return parsed.protocol === "http:" || parsed.protocol === "https:";
+      } catch {
+        return false;
+      }
+    }
+
     // Resolve API URL with precedence:
     // 1) query param (?api_url=...)
     // 2) localStorage override
     // 3) meta tag
     // 4) localhost default (dev) / relative /api (hosted)
     const qp = new URLSearchParams(window.location.search).get("api_url");
-    if (qp) localStorage.setItem("ch_api_url", qp);
+    if (qp && isValidApiUrlForBootstrap(qp)) localStorage.setItem("ch_api_url", qp);
     const storedApi = localStorage.getItem("ch_api_url");
     const meta = document.querySelector('meta[name="api-url"]');
     const defaultApi = ["localhost", "127.0.0.1"].includes(window.location.hostname)
@@ -45,13 +56,13 @@
         Sign In
       </button>
     </form>
-    <div style="margin-top:14px;border-top:1px solid #e2e8f0;padding-top:12px">
-      <label for="apiUrlInput" style="font-size:.75rem;color:#64748b">Backend API URL</label>
-      <div style="display:flex;gap:8px;align-items:center">
+    <div class="api-config">
+      <label for="apiUrlInput" class="api-config-label">Backend API URL</label>
+      <div class="api-config-row">
         <input id="apiUrlInput" type="text" placeholder="https://your-backend.example.com/api" />
         <button id="saveApiUrlBtn" class="btn btn-secondary btn-sm" type="button">Save</button>
       </div>
-      <p id="apiUrlHint" style="margin-top:6px;font-size:.72rem;color:#64748b"></p>
+      <p id="apiUrlHint" class="api-config-hint"></p>
     </div>
     <p style="text-align:center;margin-top:20px;font-size:.8rem;color:#94a3b8">
       ConsentHub v1.0 · GDPR · CCPA · LGPD

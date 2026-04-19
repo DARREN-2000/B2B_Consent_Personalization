@@ -25,6 +25,7 @@ jobs:
         run: |
           mkdir -p /tmp/site
           cp -R frontend/src/. /tmp/site/
+          # Keep SPA routes working on GitHub Pages by serving index.html for unknown paths.
           cp /tmp/site/index.html /tmp/site/404.html
           touch /tmp/site/.nojekyll
 
