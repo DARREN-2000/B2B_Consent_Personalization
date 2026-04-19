@@ -112,6 +112,19 @@ make up
 http://localhost:3000
 ```
 
+### 3b. Host frontend on GitHub Pages
+
+1. Push to `main` (or run the **Deploy Frontend to GitHub Pages** workflow manually).
+2. In GitHub repo settings, set **Pages → Source = GitHub Actions**.
+3. Open the published URL: `https://<owner>.github.io/B2B_Consent_Personalization/`.
+4. In the login view, set **Backend API URL** to your deployed backend endpoint (for example `https://api.yourdomain.com/api`) and click **Save**.
+
+You can also pass the backend URL via query parameter on first load:
+
+```
+https://<owner>.github.io/B2B_Consent_Personalization/?api_url=https://api.yourdomain.com/api
+```
+
 ### 4. Create your first admin user
 
 ```bash

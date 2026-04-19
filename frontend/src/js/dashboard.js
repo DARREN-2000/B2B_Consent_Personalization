@@ -451,6 +451,26 @@ function exportRecordsJson() {
 
 // ── Boot ──────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async () => {
+  // API URL config (useful for GitHub Pages hosting)
+  const apiUrlInput = document.getElementById("apiUrlInput");
+  const apiUrlHint = document.getElementById("apiUrlHint");
+  const saveApiUrlBtn = document.getElementById("saveApiUrlBtn");
+  if (apiUrlInput && apiUrlHint) {
+    apiUrlInput.value = window.CONSENTHUB_API_URL || "";
+    apiUrlHint.textContent = `Current: ${window.CONSENTHUB_API_URL || "Not set"}`;
+  }
+  if (saveApiUrlBtn && apiUrlInput) {
+    saveApiUrlBtn.addEventListener("click", () => {
+      const nextUrl = apiUrlInput.value.trim();
+      if (!nextUrl) {
+        localStorage.removeItem("ch_api_url");
+      } else {
+        localStorage.setItem("ch_api_url", nextUrl);
+      }
+      window.location.reload();
+    });
+  }
+
   // Wire login form
   const loginForm = document.getElementById("loginForm");
   if (loginForm) {
