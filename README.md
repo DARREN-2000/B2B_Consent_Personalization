@@ -1,244 +1,185 @@
 # ConsentHub — B2B Consent Management & Personalization Platform
 
-> **ConsentHub** is a production-ready, industry-standard B2B SaaS platform for managing data-subject consent across GDPR, CCPA, LGPD and custom privacy frameworks. It enables businesses to create consent policies, record granular consent decisions, and gain full audit visibility — all via a REST API and an intuitive admin dashboard.
+> Production-focused consent management platform with Flask API, RBAC, analytics, export, and a static admin dashboard.
+
+[![CI](https://github.com/DARREN-2000/B2B_Consent_Personalization/workflows/CI/badge.svg)](https://github.com/DARREN-2000/B2B_Consent_Personalization/actions/workflows/ci.yml)
+[![Pages](https://github.com/DARREN-2000/B2B_Consent_Personalization/actions/workflows/pages-build-deployment/badge.svg)](https://github.com/DARREN-2000/B2B_Consent_Personalization/actions/workflows/pages/pages-build-deployment)
 
 ---
 
-## 🏗️ Project Structure
+## ✅ Can you start the web app right now?
 
+**Yes.**
+
+### Local run (verified)
+
+```bash
+cp .env.example .env
+docker compose up -d --build
 ```
-consenthub/
-├── backend/                  # Python/Flask REST API
-│   ├── app/
-│   │   ├── __init__.py       # Application factory
-│   │   ├── config.py         # Environment configurations
-│   │   ├── api/              # Blueprints (routes)
-│   │   │   ├── health.py
-│   │   │   ├── auth.py
-│   │   │   ├── consents.py
-│   │   │   ├── organizations.py
-│   │   │   ├── users.py
-│   │   │   └── analytics.py
-│   │   ├── models/           # SQLAlchemy ORM models
-│   │   │   └── __init__.py
-│   │   └── utils/            # Auth helpers, pagination
-│   │       └── __init__.py
-│   ├── tests/                # pytest test suite (24+ tests)
-│   ├── wsgi.py               # WSGI entry point
-│   ├── requirements.txt
-│   ├── requirements-dev.txt
-│   ├── pytest.ini
-│   └── Dockerfile            # Multi-stage production image
-│
-├── frontend/                 # Static admin dashboard (HTML/CSS/JS)
-│   ├── src/
-│   │   ├── index.html        # Single-page dashboard
-│   │   ├── css/styles.css
-│   │   └── js/
-│   │       ├── api.js        # Centralized API client
-│   │       └── dashboard.js  # Dashboard logic
-│   ├── nginx.conf
-│   └── Dockerfile            # Nginx static server
-│
-├── helm/consenthub/          # Kubernetes Helm chart
-│   ├── Chart.yaml
-│   ├── values.yaml
-│   └── templates/
-│       ├── deployment.yaml
-│       ├── service.yaml
-│       ├── ingress.yaml
-│       ├── secret.yaml
-│       ├── hpa.yaml
-│       ├── serviceaccount.yaml
-│       └── _helpers.tpl
-│
-├── docs/                     # Documentation
-│   ├── API.md
-│   ├── DEPLOYMENT.md
-│   ├── DEVELOPMENT.md
-│   └── ARCHITECTURE.md
-│
-├── .github/workflows/        # GitHub Actions CI/CD
-│   ├── ci.yml                # Test + Docker build + Helm lint
-│   └── cd.yml                # Build, push images, Helm deploy
-│
-├── docker-compose.yml        # Production stack
-├── docker-compose.dev.yml    # Development overrides
-├── .env.example              # Environment variable template
-├── Makefile                  # Developer convenience targets
-└── README.md
+
+Then open:
+- Frontend: `http://localhost:3000`
+- Backend health: `http://localhost:5000/api/health`
+
+### Verification commands
+
+```bash
+curl -s http://localhost:5000/api/health
+curl -I http://localhost:3000
+```
+
+Expected:
+- backend health JSON with `"status":"healthy"`
+- frontend HTTP `200 OK`
+
+---
+
+## 🚀 Deployment status
+
+### GitHub Pages
+
+- Workflow for Pages deployment exists: `.github/workflows/pages.yml`
+- It deploys `frontend/src` to Pages on push to `main`.
+- Runtime API endpoint is configurable from the login page (or `?api_url=...`).
+
+### Is it deployed publicly right now?
+
+- A Pages deployment pipeline is configured and active.
+- In this task environment, external DNS resolution to `*.github.io` was unavailable, so direct public reachability could not be re-validated from here.
+- The app is **confirmed runnable locally** and **ready for Pages deployment after merge to `main`**.
+
+Hosted URL pattern:
+
+```text
+https://<owner>.github.io/B2B_Consent_Personalization/
 ```
 
 ---
 
-## ✨ Key Features
+## 🏗️ Architecture
 
-| Feature | Details |
-|---|---|
-| **Consent Policies** | Create GDPR, CCPA, LGPD, or custom policies with version control |
-| **Consent Records** | Record grant/deny/withdraw decisions with full audit trail |
-| **JWT Auth** | Access + refresh tokens, role-based access (admin / editor / viewer) |
-| **Multi-tenancy** | Organization-scoped data isolation |
-| **Analytics** | Consent rate, daily trends, method breakdown |
-| **Export** | CSV & JSON export of all consent records |
-| **Admin Dashboard** | Full SPA with charts, tables, modals, and filters |
-| **Docker** | Multi-stage builds for backend + Nginx frontend |
-| **Helm Chart** | Production-ready Kubernetes deployment with HPA & Ingress |
-| **CI/CD** | GitHub Actions: test → build → push → deploy |
+- **Frontend**: Static SPA (HTML/CSS/Vanilla JS + Chart.js)
+- **Backend**: Flask + SQLAlchemy + JWT
+- **DB**: PostgreSQL (SQLite fallback for dev)
+- **Infra**: Docker Compose, Helm, Kubernetes
+- **CI/CD**: GitHub Actions (test/build/lint/deploy)
+
+See:
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
+- [`docs/API.md`](docs/API.md)
+- [`docs/PRODUCTION_GAPS.md`](docs/PRODUCTION_GAPS.md)
 
 ---
 
-## 🚀 Quick Start (Docker Compose)
+## ✨ Core capabilities
 
-### 1. Clone & configure
+- Multi-tenant consent policy and consent record management
+- JWT auth (access + refresh)
+- RBAC (`admin`, `editor`, `viewer`)
+- Consent analytics + trend endpoints
+- CSV/JSON export
+- Dockerized backend/frontend
+- Helm chart for Kubernetes deployment
+
+---
+
+## 📸 Screenshots
+
+### Login + API endpoint configuration
+
+![Login page](docs/media/screenshots/login-page.png)
+
+### Dashboard shell
+
+![Dashboard page](docs/media/screenshots/dashboard-page.png)
+
+---
+
+## 🎬 Short demo clips
+
+> GIF clips are included for lightweight in-repo viewing.
+
+- App flow (login → dashboard):
+
+![App flow demo](docs/media/demos/app-flow.gif)
+
+- Quick setup demo:
+
+![Quick demo](docs/media/demos/quick-demo.gif)
+
+---
+
+## ⚙️ Quick start
+
+### 1) Clone and configure
 
 ```bash
 git clone https://github.com/DARREN-2000/B2B_Consent_Personalization.git
 cd B2B_Consent_Personalization
 cp .env.example .env
-# Edit .env with your secrets
 ```
 
-### 2. Start the stack
+### 2) Start stack
 
 ```bash
-make up
-# or: docker-compose up --build -d
+docker compose up -d --build
 ```
 
-### 3. Open the dashboard
+### 3) Open app
 
-```
-http://localhost:3000
-```
+- `http://localhost:3000`
 
-### 3b. Host frontend on GitHub Pages
+### 4) (Optional) GitHub Pages frontend
 
-1. Push to `main` (or run the **Deploy Frontend to GitHub Pages** workflow manually).
-2. In GitHub repo settings, set **Pages → Source = GitHub Actions**.
-3. Open the published URL: `https://<owner>.github.io/B2B_Consent_Personalization/`.
-4. In the login view, set **Backend API URL** to your deployed backend endpoint (for example `https://api.yourdomain.com/api`) and click **Save**.
+1. Ensure repo Pages source is **GitHub Actions**.
+2. Merge to `main` (or run workflow manually).
+3. Open: `https://<owner>.github.io/B2B_Consent_Personalization/`
+4. Set **Backend API URL** in login screen (example: `https://api.yourdomain.com/api`).
 
-You can also pass the backend URL via query parameter on first load:
+Or bootstrap with query param:
 
-```
+```text
 https://<owner>.github.io/B2B_Consent_Personalization/?api_url=https://api.yourdomain.com/api
 ```
 
-### 4. Create your first admin user
-
-```bash
-curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@yourcompany.com",
-    "name": "Admin User",
-    "password": "SecurePass123!",
-    "organization_id": "<your-org-id>",
-    "role": "admin"
-  }'
-```
-
 ---
 
-## 🛠️ Local Development
+## 🧪 Quality checks
 
 ```bash
-# Setup Python virtualenv
+# backend tests
 cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements-dev.txt
+PYTHONPATH=. pytest --cov=app --cov-report=term-missing
 
-# Run tests
-make test
-# or: pytest
-
-# Start backend with hot-reload
-FLASK_ENV=development python wsgi.py
-```
-
----
-
-## 🐳 Docker
-
-```bash
-# Build images individually
-docker build -t consenthub/backend:latest ./backend
-docker build -t consenthub/frontend:latest ./frontend
-
-# Run full stack
-docker-compose up -d
-
-# View logs
-docker-compose logs -f backend
-```
-
----
-
-## ☸️ Kubernetes / Helm
-
-```bash
-# Lint
+# helm lint
+cd ..
 helm lint helm/consenthub
 
-# Install
-helm upgrade --install consenthub helm/consenthub \
-  --namespace consenthub --create-namespace \
-  --set backend.secrets.secretKey="your-secret" \
-  --set backend.secrets.jwtSecretKey="your-jwt-secret" \
-  --set ingress.enabled=true \
-  --set ingress.hosts[0].host=consenthub.yourdomain.com
-
-# Uninstall
-helm uninstall consenthub -n consenthub
+# frontend image build
+docker build -t consenthub/frontend:ci ./frontend
 ```
 
 ---
 
-## 🔌 API Overview
+## 🔒 Production hardening checklist
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET`  | `/api/health` | Health check |
-| `POST` | `/api/auth/login` | Get JWT tokens |
-| `POST` | `/api/auth/register` | Register user |
-| `GET`  | `/api/auth/me` | Current user |
-| `POST` | `/api/consents/policies` | Create policy |
-| `GET`  | `/api/consents/policies` | List policies |
-| `POST` | `/api/consents/records` | Record consent |
-| `GET`  | `/api/consents/records` | List records |
-| `PUT`  | `/api/consents/records/<id>/withdraw` | Withdraw consent |
-| `GET`  | `/api/consents/records/export` | Export CSV/JSON |
-| `GET`  | `/api/analytics/summary` | Consent stats |
-| `GET`  | `/api/analytics/trends` | Daily trends |
+- [ ] Set strong secrets (`SECRET_KEY`, `JWT_SECRET_KEY`, `ADMIN_API_KEY`)
+- [ ] Replace wildcard CORS with allowlist
+- [ ] Enforce HTTPS/TLS at ingress
+- [ ] Add centralized logging and alerting
+- [ ] Add backup/restore drills for PostgreSQL
+- [ ] Add load/performance test budget in CI
+- [ ] Add SAST/Dependency/Container scanning gates
+- [ ] Add release tagging + immutable deployment strategy
 
-See [`docs/API.md`](docs/API.md) for full documentation.
+Detailed gap analysis and priorities:
 
----
-
-## 🧪 Tests
-
-```bash
-cd backend
-pytest --cov=app --cov-report=term-missing
-```
-
-24 tests covering: health, auth, consent policies, consent records, analytics.
-
----
-
-## 🔒 Security
-
-- Passwords hashed with **bcrypt**
-- **JWT** with configurable expiry (access + refresh)
-- Role-based access control (RBAC)
-- Organization-scoped data isolation
-- Non-root Docker user
-- Kubernetes secrets + `readOnlyRootFilesystem` security context
+➡️ [`docs/PRODUCTION_GAPS.md`](docs/PRODUCTION_GAPS.md)
 
 ---
 
 ## 📄 License
 
-[MIT](LICENSE)
+MIT — see [`LICENSE`](LICENSE)
