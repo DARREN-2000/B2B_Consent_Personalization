@@ -55,6 +55,12 @@ Hosted URL pattern:
 https://<owner>.github.io/B2B_Consent_Personalization/
 ```
 
+### Deployment notes
+
+- On localhost, the frontend defaults to `http://localhost:5000/api` for developer convenience only.
+- For hosted deployments (Pages/custom domain), set an HTTPS backend API URL in the login screen.
+- Pages uses `index.html` as `404.html` for SPA route fallback; this favors client-side routing over strict static 404 behavior.
+
 ---
 
 ## 🏗️ Architecture
