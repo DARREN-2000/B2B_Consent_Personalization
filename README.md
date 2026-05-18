@@ -90,6 +90,14 @@ consenthub/
 
 ## 🚀 Quick Start (Docker Compose)
 
+### 0. Fast demo mode (free & easiest)
+
+```bash
+make demo
+```
+
+This starts backend + frontend with SQLite (no PostgreSQL setup), so you can run a working demo immediately.
+
 ### 1. Clone & configure
 
 ```bash

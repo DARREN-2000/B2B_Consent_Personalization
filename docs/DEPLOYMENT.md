@@ -10,6 +10,21 @@
 
 ## Docker Compose (recommended for small deployments)
 
+### Free/easy demo deployment
+
+```bash
+docker-compose -f docker-compose.demo.yml up --build -d
+```
+
+This mode runs:
+- `backend`  — Flask API using local SQLite (`/app/data/consenthub_demo.db`)
+- `frontend` — Nginx dashboard on port 3000
+
+No PostgreSQL provisioning is required, making it ideal for demos.
+For safety, this mode defaults CORS to `http://localhost:3000` and uses demo secrets unless you override them in your environment.
+SQLite demo data is persisted in the `demo_data` Docker volume.
+⚠️ Demo secrets are intentionally weak defaults and must be overridden before any internet-facing deployment.
+
 ### Production
 
 ```bash

@@ -1,10 +1,11 @@
-.PHONY: help up down dev test build clean logs shell
+.PHONY: help up demo down dev test build clean logs shell
 
 # Default target
 help:
 	@echo ""
 	@echo "ConsentHub Makefile targets:"
 	@echo "  make up         - Start the full production stack (Docker Compose)"
+	@echo "  make demo       - Start free/easy demo stack (SQLite, no external DB)"
 	@echo "  make dev        - Start with hot-reload (development overrides)"
 	@echo "  make down       - Stop and remove containers"
 	@echo "  make test       - Run backend pytest suite"
@@ -18,6 +19,9 @@ help:
 
 up:
 	docker-compose up --build -d
+
+demo:
+	docker-compose -f docker-compose.demo.yml up --build -d
 
 dev:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
