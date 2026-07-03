@@ -37,6 +37,11 @@
         Sign In
       </button>
     </form>
+    <div style="margin-top: 15px; text-align: center;">
+      <button type="button" class="btn btn-secondary" id="demoModeBtn" style="width: 100%; justify-content: center;">
+        Try Demo Mode
+      </button>
+    </div>
     <p style="text-align:center;margin-top:20px;font-size:.8rem;color:#94a3b8">
       ConsentHub v1.0 · GDPR · CCPA · LGPD
     </p>
@@ -384,6 +389,7 @@
 
 <!-- ── Scripts ────────────────────────────────────────────────────────── -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="js/demo-mock-api.js"></script>
 <script src="js/api.js"></script>
 <script src="js/dashboard.js"></script>
 <script>
@@ -401,6 +407,33 @@
       document.getElementById("serverStatus").textContent = "🔴 API Unreachable";
     });
   }
+</script>
+<script>
+  document.getElementById('demoModeBtn')?.addEventListener('click', () => {
+    localStorage.setItem('ch_demo_mode', 'true');
+    // Set a fake token so the app bypasses login screen
+    localStorage.setItem('ch_access_token', 'demo-token');
+    window.location.reload();
+  });
+
+  // Add a button in the app shell to exit demo mode
+  document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('ch_demo_mode')) {
+      const topBar = document.querySelector('.top-bar');
+      if (topBar) {
+        const exitBtn = document.createElement('button');
+        exitBtn.className = 'btn btn-secondary btn-sm';
+        exitBtn.style.marginRight = '10px';
+        exitBtn.textContent = 'Exit Demo Mode';
+        exitBtn.onclick = () => {
+          localStorage.removeItem('ch_demo_mode');
+          localStorage.removeItem('ch_access_token');
+          window.location.reload();
+        };
+        topBar.insertBefore(exitBtn, topBar.firstChild);
+      }
+    }
+  });
 </script>
 </body>
 </html>
