@@ -238,9 +238,9 @@ async function loadRecords(page = 1) {
     }
     tbody.innerHTML = data.items.map(r => `
       <tr>
-        <td><code style="font-size:.78rem">${esc(r.id.slice(0,8))}…</code></td>
+        <td><code style="font-size:.78rem">${r.id ? esc(r.id.slice(0,8)) + '…' : '—'}</code></td>
         <td>${esc(r.data_subject_email || r.data_subject_id)}</td>
-        <td><code style="font-size:.78rem">${esc(r.policy_id.slice(0,8))}…</code></td>
+        <td><code style="font-size:.78rem">${r.policy_id ? esc(r.policy_id.slice(0,8)) + '…' : '—'}</code></td>
         <td><span class="badge badge-${r.status}">${r.status}</span></td>
         <td>${r.consent_method || "—"}</td>
         <td>${r.granted_at ? new Date(r.granted_at).toLocaleDateString() : "—"}</td>
