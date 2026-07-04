@@ -7,8 +7,8 @@ let MOCK_DATA = {
     { id: 'pol_2', name: 'CCPA Do Not Sell', policy_type: 'ccpa', version: '1.0', retention_days: 180, requires_explicit_consent: false, is_active: true },
   ],
   records: [
-    { id: 'rec_1', data_subject_id: 'user-123', policy: { name: 'GDPR Marketing Consent' }, status: 'granted', consent_method: 'web-form', granted_at: new Date().toISOString() },
-    { id: 'rec_2', data_subject_id: 'user-456', policy: { name: 'CCPA Do Not Sell' }, status: 'denied', consent_method: 'api', granted_at: null },
+    { id: 'rec_1', data_subject_id: 'user-123', policy_id: 'pol_1', status: 'granted', consent_method: 'web-form', granted_at: new Date().toISOString() },
+    { id: 'rec_2', data_subject_id: 'user-456', policy_id: 'pol_2', status: 'denied', consent_method: 'api', granted_at: null },
   ],
   organizations: [
     { id: 'org_1', name: 'Acme Corp', domain: 'acme.com', industry: 'Retail', plan: 'pro', is_active: true },
@@ -32,11 +32,12 @@ window.fetch = async function(resource, config) {
   const path = url.pathname;
   const method = config?.method || 'GET';
 
-  const respond = (data, status = 200) => {
+  const respond = (data, status = 200, contentType = "application/json") => {
     return Promise.resolve({
       ok: status >= 200 && status < 300,
       status: status,
-      json: () => Promise.resolve(data)
+      json: () => Promise.resolve(data),
+      blob: () => Promise.resolve(new Blob([typeof data === 'string' ? data : JSON.stringify(data)], { type: contentType }))
     });
   };
 
@@ -65,6 +66,20 @@ window.fetch = async function(resource, config) {
   }
 
   // Records
+  if (path.includes('/consents/records/export') && method === 'GET') {
+    const format = url.searchParams.get('format') || 'csv';
+
+    if (format === 'json') {
+      return respond(MOCK_DATA.records, 200, "application/json");
+    } else {
+      const headers = ["id", "data_subject_id", "policy_id", "status", "consent_method", "granted_at"];
+      const rows = MOCK_DATA.records.map(r =>
+        [r.id, r.data_subject_id, r.policy_id || "", r.status, r.consent_method, r.granted_at || ""].join(",")
+      );
+      const csvString = [headers.join(","), ...rows].join("\n");
+      return respond(csvString, 200, "text/csv");
+    }
+  }
   if (path.includes('/consents/records') && method === 'GET') {
     return respond({ items: MOCK_DATA.records, total: MOCK_DATA.records.length, page: 1, pages: 1 });
   }
@@ -74,7 +89,7 @@ window.fetch = async function(resource, config) {
     const newRecord = {
       id: 'rec_' + Date.now(),
       data_subject_id: body.data_subject_id,
-      policy: policy ? { name: policy.name } : { name: 'Unknown' },
+      policy_id: body.policy_id,
       status: body.status,
       consent_method: body.consent_method,
       granted_at: body.status === 'granted' ? new Date().toISOString() : null
