@@ -36,6 +36,7 @@ consenthub/
 │   │   ├── css/styles.css
 │   │   └── js/
 │   │       ├── api.js        # Centralized API client
+│   │       ├── demo-mock-api.js # Mock API for Demo Mode
 │   │       └── dashboard.js  # Dashboard logic
 │   ├── nginx.conf
 │   └── Dockerfile            # Nginx static server
@@ -60,7 +61,8 @@ consenthub/
 │
 ├── .github/workflows/        # GitHub Actions CI/CD
 │   ├── ci.yml                # Test + Docker build + Helm lint
-│   └── cd.yml                # Build, push images, Helm deploy
+│   ├── cd.yml                # Build, push images, Helm deploy
+│   └── pages.yml             # Deploy frontend to GitHub Pages
 │
 ├── docker-compose.yml        # Production stack
 ├── docker-compose.dev.yml    # Development overrides
@@ -82,6 +84,7 @@ consenthub/
 | **Analytics** | Consent rate, daily trends, method breakdown |
 | **Export** | CSV & JSON export of all consent records |
 | **Admin Dashboard** | Full SPA with charts, tables, modals, and filters |
+| **Demo Mode** | Try out the platform directly on GitHub Pages with no backend required! |
 | **Docker** | Multi-stage builds for backend + Nginx frontend |
 | **Helm Chart** | Production-ready Kubernetes deployment with HPA & Ingress |
 | **CI/CD** | GitHub Actions: test → build → push → deploy |
