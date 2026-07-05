@@ -420,6 +420,126 @@ function renderPagination(containerId, data, loadFn) {
   el.innerHTML = html;
 }
 
+// ── Playground ──────────────────────────────────────────────────────────────
+async function initPlayground() {
+  const select = document.getElementById("pgEndpointSelect");
+  const methodInput = document.getElementById("pgMethod");
+  const pathInput = document.getElementById("pgPath");
+  const bodyInput = document.getElementById("pgBody");
+  const form = document.getElementById("playgroundForm");
+
+  if (!select || !form) return;
+
+  const mockTemplates = {
+    "POST|/consents/policies": JSON.stringify({
+      name: "My Custom Policy",
+      policy_type: "custom",
+      description: "Test policy created from playground",
+      version: "1.0",
+      retention_days: 365,
+      requires_explicit_consent: true
+    }, null, 2),
+    "POST|/consents/records": JSON.stringify({
+      policy_id: "pol_1",
+      data_subject_id: "user-999",
+      data_subject_email: "test@example.com",
+      status: "granted",
+      consent_method: "api"
+    }, null, 2)
+  };
+
+  select.addEventListener("change", (e) => {
+    const val = e.target.value;
+    if (!val) {
+      pathInput.value = "";
+      bodyInput.value = "";
+      return;
+    }
+    const [method, path] = val.split("|");
+    methodInput.value = method;
+    pathInput.value = path;
+
+    if (mockTemplates[val]) {
+      bodyInput.value = mockTemplates[val];
+    } else {
+      bodyInput.value = "";
+    }
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("pgSendBtn");
+    const method = methodInput.value;
+    let path = pathInput.value;
+    if (!path.startsWith("/")) path = "/" + path;
+
+    const bodyStr = bodyInput.value.trim();
+    let body = undefined;
+    if (["POST", "PUT"].includes(method) && bodyStr) {
+      try {
+        body = JSON.parse(bodyStr);
+      } catch (err) {
+        toast("Invalid JSON in Request Body", "error");
+        return;
+      }
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+    document.getElementById("pgResStatus").textContent = "—";
+    document.getElementById("pgResTime").textContent = "—";
+    document.getElementById("pgResponseBody").textContent = "Loading...";
+
+    const start = Date.now();
+    try {
+      const url = `${window.CONSENTHUB_API_URL || API_BASE}${path}`;
+      const token = localStorage.getItem("ch_access_token");
+      const headers = {
+        "Accept": "application/json"
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      if (body) {
+        headers["Content-Type"] = "application/json";
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined
+      });
+
+      const timeMs = Date.now() - start;
+      document.getElementById("pgResStatus").textContent = `${res.status} ${res.statusText || ""}`.trim();
+      document.getElementById("pgResStatus").style.color = res.ok ? "#16a34a" : "#dc2626";
+      document.getElementById("pgResTime").textContent = `${timeMs} ms`;
+
+      let text;
+      try {
+        text = await res.text();
+      } catch (e) {
+        // Fallback for mocked fetch that might not implement text()
+        const json = await res.json();
+        text = JSON.stringify(json);
+      }
+      try {
+        const json = JSON.parse(text);
+        document.getElementById("pgResponseBody").textContent = JSON.stringify(json, null, 2);
+      } catch {
+        document.getElementById("pgResponseBody").textContent = text;
+      }
+    } catch (err) {
+      document.getElementById("pgResStatus").textContent = "Error";
+      document.getElementById("pgResStatus").style.color = "#dc2626";
+      document.getElementById("pgResponseBody").textContent = err.toString();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Send Request";
+    }
+  });
+}
+
 // ── Export helpers ──────────────────────────────────────────────────────────
 function exportRecordsCsv() {
   const url = `${API_BASE}/consents/records/export?format=csv`;
@@ -511,6 +631,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Wire record status filter
   document.getElementById("recordStatusFilter")?.addEventListener("change", () => loadRecords(1));
+
+  // Initialize Playground
+  initPlayground();
 
   // Initial page
   navigate("dashboard");

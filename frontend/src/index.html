@@ -75,6 +75,10 @@
       <div class="nav-item" data-nav="analytics">
         <span class="icon">📈</span> Analytics
       </div>
+      <div class="nav-section">Developer</div>
+      <div class="nav-item" data-nav="playground">
+        <span class="icon">⚡</span> Playground
+      </div>
       <div class="nav-section" data-admin-only>Admin</div>
       <div class="nav-item" data-nav="organizations" data-admin-only>
         <span class="icon">🏢</span> Organizations
@@ -250,6 +254,65 @@
             <canvas id="methodChart"></canvas>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ─────────── Playground page ─────────── -->
+    <div id="page-playground" class="page">
+      <div style="margin-bottom:20px">
+        <h2 style="font-size:1rem;font-weight:600;color:#64748b">API Playground – Test API Endpoints interactively</h2>
+      </div>
+      <div class="card">
+        <form id="playgroundForm">
+          <div class="form-row">
+            <div class="form-group" style="flex:1">
+              <label>Select Endpoint</label>
+              <select id="pgEndpointSelect">
+                <option value="">-- Custom Request --</option>
+                <option value="GET|/health">GET /health</option>
+                <option value="GET|/auth/me">GET /auth/me</option>
+                <option value="GET|/consents/policies">GET /consents/policies</option>
+                <option value="POST|/consents/policies">POST /consents/policies</option>
+                <option value="GET|/consents/records">GET /consents/records</option>
+                <option value="POST|/consents/records">POST /consents/records</option>
+                <option value="GET|/analytics/summary">GET /analytics/summary</option>
+                <option value="GET|/analytics/trends">GET /analytics/trends</option>
+                <option value="GET|/organizations">GET /organizations</option>
+              </select>
+            </div>
+            <div class="form-group" style="width:120px">
+              <label>Method</label>
+              <select id="pgMethod">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Request Path (relative to API Base URL)</label>
+            <input type="text" id="pgPath" placeholder="/consents/policies" required />
+          </div>
+          <div class="form-group">
+            <label>Request Body (JSON)</label>
+            <textarea id="pgBody" rows="5" placeholder="{&#10;  &#34;key&#34;: &#34;value&#34;&#10;}" style="font-family:monospace"></textarea>
+          </div>
+          <div style="margin-top:16px">
+            <button type="submit" class="btn btn-primary" id="pgSendBtn">Send Request</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span class="card-title" style="margin:0">Response</span>
+          <div style="display:flex;gap:12px;font-size:0.875rem">
+            <div>Status: <strong id="pgResStatus">—</strong></div>
+            <div>Time: <strong id="pgResTime">—</strong></div>
+          </div>
+        </div>
+        <pre id="pgResponseBody" style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:6px;overflow-x:auto;min-height:100px;font-family:monospace;white-space:pre-wrap;margin:0"></pre>
       </div>
     </div>
 
