@@ -1,129 +1,112 @@
-# ConsentHub — B2B Consent Management & Personalization Platform
+<div align="center">
+  <img src="docs/assets/hero.svg" alt="ConsentHub Hero" width="800"/>
 
-> **ConsentHub** is a production-ready, industry-standard B2B SaaS platform for managing data-subject consent across GDPR, CCPA, LGPD and custom privacy frameworks. It enables businesses to create consent policies, record granular consent decisions, and gain full audit visibility — all via a REST API and an intuitive admin dashboard.
+  <p align="center">
+    <strong>Production-ready B2B SaaS platform for managing consent policies and absolute auditability.</strong>
+  </p>
 
----
+  <p align="center">
+    <a href="https://github.com/DARREN-2000/B2B_Consent_Personalization/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/DARREN-2000/B2B_Consent_Personalization/ci.yml?style=flat-square&label=CI" alt="CI Status"></a>
+    <a href="https://darren-2000.github.io/B2B_Consent_Personalization/"><img src="https://img.shields.io/badge/docs-MkDocs-indigo?style=flat-square" alt="Documentation"></a>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License"></a>
+    <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.12-blue?style=flat-square" alt="Python"></a>
+  </p>
 
-## 🏗️ Project Structure
-
-```
-consenthub/
-├── backend/                  # Python/Flask REST API
-│   ├── app/
-│   │   ├── __init__.py       # Application factory
-│   │   ├── config.py         # Environment configurations
-│   │   ├── api/              # Blueprints (routes)
-│   │   │   ├── health.py
-│   │   │   ├── auth.py
-│   │   │   ├── consents.py
-│   │   │   ├── organizations.py
-│   │   │   ├── users.py
-│   │   │   └── analytics.py
-│   │   ├── models/           # SQLAlchemy ORM models
-│   │   │   └── __init__.py
-│   │   └── utils/            # Auth helpers, pagination
-│   │       └── __init__.py
-│   ├── tests/                # pytest test suite (24+ tests)
-│   ├── wsgi.py               # WSGI entry point
-│   ├── requirements.txt
-│   ├── requirements-dev.txt
-│   ├── pytest.ini
-│   └── Dockerfile            # Multi-stage production image
-│
-├── frontend/                 # Static admin dashboard (HTML/CSS/JS)
-│   ├── src/
-│   │   ├── index.html        # Single-page dashboard
-│   │   ├── css/styles.css
-│   │   └── js/
-│   │       ├── api.js        # Centralized API client
-│   │       ├── demo-mock-api.js # Mock API for Demo Mode
-│   │       └── dashboard.js  # Dashboard logic
-│   ├── nginx.conf
-│   └── Dockerfile            # Nginx static server
-│
-├── helm/consenthub/          # Kubernetes Helm chart
-│   ├── Chart.yaml
-│   ├── values.yaml
-│   └── templates/
-│       ├── deployment.yaml
-│       ├── service.yaml
-│       ├── ingress.yaml
-│       ├── secret.yaml
-│       ├── hpa.yaml
-│       ├── serviceaccount.yaml
-│       └── _helpers.tpl
-│
-├── docs/                     # Documentation
-│   ├── API.md
-│   ├── DEPLOYMENT.md
-│   ├── DEVELOPMENT.md
-│   └── ARCHITECTURE.md
-│
-├── .github/workflows/        # GitHub Actions CI/CD
-│   ├── ci.yml                # Test + Docker build + Helm lint
-│   ├── cd.yml                # Build, push images, Helm deploy
-│   └── pages.yml             # Deploy frontend to GitHub Pages
-│
-├── docker-compose.yml        # Production stack
-├── docker-compose.dev.yml    # Development overrides
-├── .env.example              # Environment variable template
-├── Makefile                  # Developer convenience targets
-└── README.md
-```
+  <p align="center">
+    <a href="https://darren-2000.github.io/B2B_Consent_Personalization/"><strong>Explore the Docs »</strong></a>
+    <br />
+    <br />
+    <a href="#quick-start">Quick Start</a>
+    ·
+    <a href="#core-features">Features</a>
+    ·
+    <a href="https://github.com/DARREN-2000/B2B_Consent_Personalization/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/DARREN-2000/B2B_Consent_Personalization/issues">Request Feature</a>
+  </p>
+</div>
 
 ---
 
-## ✨ Key Features
+## 🚀 Why ConsentHub?
 
-| Feature | Details |
+Managing data-subject consent in an increasingly regulated environment (GDPR, CCPA, LGPD) is complex and fraught with risk. Traditional platforms are either excessively heavyweight, designed only for enterprise marketing teams, or lack developer-friendly primitives.
+
+**ConsentHub strikes the balance.** It provides a highly performant, stateless API designed to integrate natively into your existing B2B architecture, coupled with a seamless administrative dashboard.
+
+It guarantees **multi-tenant data isolation**, **immutable audit trails**, and **horizontal scalability** out of the box.
+
+---
+
+## ✨ Core Features
+
+| Capability | Description |
 |---|---|
-| **Consent Policies** | Create GDPR, CCPA, LGPD, or custom policies with version control |
-| **Consent Records** | Record grant/deny/withdraw decisions with full audit trail |
-| **JWT Auth** | Access + refresh tokens, role-based access (admin / editor / viewer) |
-| **Multi-tenancy** | Organization-scoped data isolation |
-| **Analytics** | Consent rate, daily trends, method breakdown |
-| **Export** | CSV & JSON export of all consent records |
-| **Admin Dashboard** | Full SPA with charts, tables, modals, and filters |
-| **Demo Mode** | Try out the platform directly on GitHub Pages with no backend required! |
-| **Docker** | Multi-stage builds for backend + Nginx frontend |
-| **Helm Chart** | Production-ready Kubernetes deployment with HPA & Ingress |
-| **CI/CD** | GitHub Actions: test → build → push → deploy |
+| **Immutable Audit Logs** | Every grant, denial, and withdrawal is recorded immutably with timestamp and context. |
+| **Strict Multi-tenancy** | Organization-scoped data isolation enforced deeply at the ORM layer. |
+| **Dynamic Policies** | Model GDPR, CCPA, LGPD, or custom consent frameworks with version control. |
+| **Role-Based Access** | Granular access control via JWTs (`admin`, `editor`, `viewer`). |
+| **Zero-Build UI** | A blazingly fast Vanilla JS dashboard served efficiently via Nginx. |
+| **Cloud-Native Edge** | Production-ready Helm charts and Docker multi-stage builds. |
 
 ---
 
-## 🚀 Quick Start (Docker Compose)
+## 🏗️ Architecture Overview
 
-### 0. Fast demo mode (free & easiest)
+ConsentHub is designed around a three-tier, cloud-native architecture that separates the edge routing, the stateless application logic, and the persistent data store.
 
-```bash
-make demo
+<div align="center">
+  <img src="docs/assets/architecture.svg" alt="Architecture Diagram" width="800"/>
+</div>
+
+### Data Flow
+
+```mermaid
+sequenceDiagram
+    participant EndUser as End User
+    participant App as Client Application
+    participant API as Consent API
+    participant DB as PostgreSQL
+
+    EndUser->>App: Accepts "Terms v1.2"
+    App->>API: POST /api/consents/records (status: granted)
+    API->>API: Validate JWT & tenant scope
+    API->>DB: Append immutable record
+    DB-->>API: Confirm write
+    API-->>App: 200 OK (Record ID)
 ```
 
-This starts backend + frontend with SQLite (no PostgreSQL setup), so you can run a working demo immediately.
+---
 
-### 1. Clone & configure
+## ⚡ Quick Start
+
+### 1. The 30-Second Demo Mode (No DB required)
+
+Experience the platform instantly using our containerized Demo Mode (powered by an internal SQLite instance).
 
 ```bash
 git clone https://github.com/DARREN-2000/B2B_Consent_Personalization.git
 cd B2B_Consent_Personalization
-cp .env.example .env
-# Edit .env with your secrets
-```
 
-### 2. Start the stack
+make demo
+```
+Navigate to `http://localhost:3000`.
+
+### 2. Production Docker Compose
+
+For a standard deployment utilizing PostgreSQL:
 
 ```bash
-make up
-# or: docker-compose up --build -d
+# 1. Configure your environment secrets
+cp .env.example .env
+
+# 2. Start the full stack
+docker-compose up --build -d
 ```
 
-### 3. Open the dashboard
+### 3. Bootstrap an Administrator
 
-```
-http://localhost:3000
-```
-
-### 4. Create your first admin user
+Create your first organizational admin user to access the dashboard:
 
 ```bash
 curl -X POST http://localhost:5000/api/auth/register \
@@ -132,111 +115,47 @@ curl -X POST http://localhost:5000/api/auth/register \
     "email": "admin@yourcompany.com",
     "name": "Admin User",
     "password": "SecurePass123!",
-    "organization_id": "<your-org-id>",
+    "organization_id": "YOUR-ORG-UUID",
     "role": "admin"
   }'
 ```
 
 ---
 
-## 🛠️ Local Development
+## 📚 Documentation
 
-```bash
-# Setup Python virtualenv
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements-dev.txt
+Comprehensive documentation is available in the `docs/` directory and hosted online via GitHub Pages.
 
-# Run tests
-make test
-# or: pytest
-
-# Start backend with hot-reload
-FLASK_ENV=development python wsgi.py
-```
+- **[Getting Started](docs/getting-started.md)**: Onboarding and initial setup.
+- **[Installation](docs/installation.md)**: Detailed Docker and Kubernetes setup.
+- **[Architecture & Design](docs/architecture.md)**: Deep dives into the system internals and data models.
+- **[API Reference](docs/api.md)**: Exhaustive endpoints documentation.
+- **[Deployment](docs/deployment.md)**: Strategies for running ConsentHub in production.
 
 ---
 
-## 🐳 Docker
+## 🛡️ Enterprise Readiness
 
-```bash
-# Build images individually
-docker build -t consenthub/backend:latest ./backend
-docker build -t consenthub/frontend:latest ./frontend
+ConsentHub is built to operate reliably in heavily scrutinized environments.
 
-# Run full stack
-docker-compose up -d
-
-# View logs
-docker-compose logs -f backend
-```
+- **Security:** We take security seriously. Please review our [Security Policy](SECURITY.md) for vulnerability reporting.
+- **Scale:** Stateless API design ensures linear scalability via Kubernetes HPA.
+- **Lineage:** Every record maps precisely back to the method, timestamp, and policy version it was generated under.
 
 ---
 
-## ☸️ Kubernetes / Helm
+## 🤝 Contributing
 
-```bash
-# Lint
-helm lint helm/consenthub
+We welcome contributions of all sizes! Whether it's a typo fix, a new API endpoint, or an integration guide, your help makes ConsentHub better.
 
-# Install
-helm upgrade --install consenthub helm/consenthub \
-  --namespace consenthub --create-namespace \
-  --set backend.secrets.secretKey="your-secret" \
-  --set backend.secrets.jwtSecretKey="your-jwt-secret" \
-  --set ingress.enabled=true \
-  --set ingress.hosts[0].host=consenthub.yourdomain.com
-
-# Uninstall
-helm uninstall consenthub -n consenthub
-```
+Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting a Pull Request.
 
 ---
 
-## 🔌 API Overview
+## 📜 License
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET`  | `/api/health` | Health check |
-| `POST` | `/api/auth/login` | Get JWT tokens |
-| `POST` | `/api/auth/register` | Register user |
-| `GET`  | `/api/auth/me` | Current user |
-| `POST` | `/api/consents/policies` | Create policy |
-| `GET`  | `/api/consents/policies` | List policies |
-| `POST` | `/api/consents/records` | Record consent |
-| `GET`  | `/api/consents/records` | List records |
-| `PUT`  | `/api/consents/records/<id>/withdraw` | Withdraw consent |
-| `GET`  | `/api/consents/records/export` | Export CSV/JSON |
-| `GET`  | `/api/analytics/summary` | Consent stats |
-| `GET`  | `/api/analytics/trends` | Daily trends |
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-See [`docs/API.md`](docs/API.md) for full documentation.
-
----
-
-## 🧪 Tests
-
-```bash
-cd backend
-pytest --cov=app --cov-report=term-missing
-```
-
-24 tests covering: health, auth, consent policies, consent records, analytics.
-
----
-
-## 🔒 Security
-
-- Passwords hashed with **bcrypt**
-- **JWT** with configurable expiry (access + refresh)
-- Role-based access control (RBAC)
-- Organization-scoped data isolation
-- Non-root Docker user
-- Kubernetes secrets + `readOnlyRootFilesystem` security context
-
----
-
-## 📄 License
-
-[MIT](LICENSE)
+<div align="center">
+  <sub>Built with precision for enterprise developers.</sub>
+</div>

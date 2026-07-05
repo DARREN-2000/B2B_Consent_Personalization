@@ -1,0 +1,48 @@
+<svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with subtle grid -->
+  <rect width="800" height="400" fill="#0B0F19"/>
+  <path d="M0 0 L800 400 M800 0 L0 400" stroke="#1E293B" stroke-width="0.5" stroke-dasharray="4 4" opacity="0.3"/>
+
+  <!-- Network nodes background effect -->
+  <circle cx="150" cy="100" r="3" fill="#3B82F6" opacity="0.4" />
+  <circle cx="650" cy="300" r="4" fill="#8B5CF6" opacity="0.4" />
+  <circle cx="700" cy="80" r="2" fill="#10B981" opacity="0.4" />
+
+  <!-- Glowing central orb -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0B0F19" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="text-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#94A3B8"/>
+    </linearGradient>
+    <linearGradient id="shield-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="400" cy="200" r="150" fill="url(#glow)"/>
+
+  <!-- Central Shield / Checkmark icon -->
+  <g transform="translate(360, 120)">
+    <path d="M40 0L80 15V45C80 70.83 62.9 94.75 40 100C17.1 94.75 0 70.83 0 45V15L40 0Z" fill="url(#shield-gradient)" opacity="0.9"/>
+    <path d="M22 48L34 60L58 35" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Main Title -->
+  <text x="400" y="270" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="42" font-weight="800" text-anchor="middle" fill="url(#text-gradient)">ConsentHub</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="310" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="18" font-weight="400" text-anchor="middle" fill="#64748B" letter-spacing="1.5">ENTERPRISE CONSENT MANAGEMENT</text>
+
+  <!-- Data nodes wrapping the shield -->
+  <g stroke="#3B82F6" stroke-width="2" opacity="0.6">
+    <path d="M280 170 Q 320 120 360 170" fill="none" stroke-dasharray="4 4" />
+    <circle cx="280" cy="170" r="4" fill="#3B82F6"/>
+    <path d="M520 170 Q 480 120 440 170" fill="none" stroke-dasharray="4 4" />
+    <circle cx="520" cy="170" r="4" fill="#3B82F6"/>
+  </g>
+</svg>

@@ -1,0 +1,48 @@
+<svg width="800" height="300" viewBox="0 0 800 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="300" fill="#0B0F19"/>
+
+  <defs>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .node { fill: #1E293B; stroke: #334155; stroke-width: 2; rx: 8; }
+    .node-text { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 16px; font-weight: bold; fill: #F8FAFC; text-anchor: middle; }
+    .edge { stroke: url(#glow); stroke-width: 3; fill: none; }
+    .label { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12px; fill: #94A3B8; text-anchor: middle; }
+    .circle { fill: #0B0F19; stroke: url(#glow); stroke-width: 2; }
+  </style>
+
+  <!-- Nodes -->
+  <rect x="50" y="100" width="160" height="100" class="node" />
+  <text x="130" y="155" class="node-text">End User</text>
+
+  <rect x="320" y="100" width="160" height="100" class="node" />
+  <text x="400" y="155" class="node-text">Consent API</text>
+
+  <rect x="590" y="100" width="160" height="100" class="node" />
+  <text x="670" y="155" class="node-text">Audit Log</text>
+
+  <!-- Edges -->
+  <path d="M210 130 L320 130" class="edge" marker-end="url(#arrow-glow)"/>
+  <text x="265" y="120" class="label">1. Grants Consent</text>
+
+  <path d="M320 170 L210 170" class="edge" stroke-dasharray="4" marker-end="url(#arrow-glow)"/>
+  <text x="265" y="195" class="label">4. Status 200 OK</text>
+
+  <path d="M480 150 L590 150" class="edge" marker-end="url(#arrow-glow)"/>
+  <text x="535" y="140" class="label">2. Append Immutable Record</text>
+
+  <path d="M590 170 L480 170" class="edge" stroke-dasharray="4" marker-end="url(#arrow-glow)"/>
+  <text x="535" y="195" class="label">3. Confirm Write</text>
+
+  <defs>
+    <marker id="arrow-glow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#10B981" />
+    </marker>
+  </defs>
+
+</svg>
