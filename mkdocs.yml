@@ -1,0 +1,70 @@
+site_name: ConsentHub
+site_description: Production-ready B2B SaaS platform for managing consent policies.
+site_url: https://darren-2000.github.io/B2B_Consent_Personalization/
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  logo: assets/hero.svg
+  favicon: assets/hero.svg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - toc.integrate
+    - content.code.copy
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - tables
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+
+nav:
+  - Introduction: index.md
+  - Getting Started:
+      - Overview: getting-started.md
+      - Installation: installation.md
+      - Configuration: configuration.md
+  - Core Concepts:
+      - Architecture: architecture.md
+      - Design: design.md
+      - Internals: internals.md
+  - Operations:
+      - API Reference: api.md
+      - Deployment: deployment.md
+      - Development: development.md
+      - Security: security.md
+      - Performance: performance.md
+  - Help:
+      - Troubleshooting: troubleshooting.md
+      - FAQ: faq.md
+      - Glossary: glossary.md

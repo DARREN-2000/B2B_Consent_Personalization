@@ -1,0 +1,67 @@
+<svg width="800" height="500" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="500" fill="#0F172A"/>
+
+  <defs>
+    <linearGradient id="box" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="primary" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .text-sm { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; fill: #94A3B8; }
+    .text-md { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 16px; font-weight: bold; fill: #F8FAFC; }
+    .line { stroke: #334155; stroke-width: 2; }
+    .arrow { fill: #334155; }
+    .box { fill: url(#box); stroke: #334155; stroke-width: 1; rx: 8; }
+    .highlight { stroke: url(#primary); stroke-width: 2; }
+  </style>
+
+  <!-- Cloud Edge Layer -->
+  <rect x="50" y="50" width="700" height="120" class="box" stroke-dasharray="4"/>
+  <text x="70" y="80" class="text-sm">Edge / Network</text>
+
+  <rect x="150" y="70" width="500" height="80" class="box highlight" />
+  <text x="400" y="110" class="text-md" text-anchor="middle">Ingress Controller / Nginx</text>
+  <text x="400" y="130" class="text-sm" text-anchor="middle">TLS Termination • Routing</text>
+
+  <!-- Application Layer -->
+  <rect x="50" y="210" width="700" height="130" class="box" stroke-dasharray="4"/>
+  <text x="70" y="240" class="text-sm">Application Layer</text>
+
+  <rect x="150" y="230" width="220" height="90" class="box highlight" />
+  <text x="260" y="270" class="text-md" text-anchor="middle">Static SPA</text>
+  <text x="260" y="290" class="text-sm" text-anchor="middle">Vanilla JS Dashboard</text>
+
+  <rect x="430" y="230" width="220" height="90" class="box highlight" />
+  <text x="540" y="270" class="text-md" text-anchor="middle">Flask REST API</text>
+  <text x="540" y="290" class="text-sm" text-anchor="middle">Python 3.12 • JWT Auth</text>
+
+  <!-- Persistence Layer -->
+  <rect x="50" y="380" width="700" height="100" class="box" stroke-dasharray="4"/>
+  <text x="70" y="410" class="text-sm">Persistence Layer</text>
+
+  <rect x="300" y="400" width="200" height="60" class="box highlight" rx="30"/>
+  <text x="400" y="435" class="text-md" text-anchor="middle">PostgreSQL 16</text>
+
+  <!-- Connections -->
+  <path d="M400 150 L400 230" class="line" marker-end="url(#arrowhead)"/>
+  <path d="M260 150 L260 230" class="line" marker-end="url(#arrowhead)"/>
+  <path d="M540 150 L540 230" class="line" marker-end="url(#arrowhead)"/>
+
+  <path d="M540 320 L540 360 L400 360 L400 400" fill="none" class="line" marker-end="url(#arrowhead)"/>
+  <path d="M260 320 L260 360 L520 360" fill="none" class="line" stroke-dasharray="4" marker-end="url(#arrowhead)"/>
+
+  <text x="390" y="350" class="text-sm" text-anchor="middle" fill="#3B82F6">API Calls</text>
+
+  <!-- Marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" class="arrow" />
+    </marker>
+  </defs>
+</svg>
